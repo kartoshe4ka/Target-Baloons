@@ -20,10 +20,10 @@ namespace NewBall
             Width = 2 * size;
         }
 
-        public void ChangeXY(Point dot)
+        public void ChangeVector(Point dot)
         {
-            t.Enabled = true;
             double k = 0.005;
+            t.Enabled = true;
             targetPoint = dot;
 
             vx = (dot.X - x) * k;
@@ -32,8 +32,8 @@ namespace NewBall
 
         public override void Move()
         {
-            //проверка на попадание
             base.Move();
+            //проверка на попадание
             if (Math.Abs(x - targetPoint.X) < 5 && Math.Abs(y - targetPoint.Y) < 5)
                 t.Enabled = false;
         }
@@ -51,7 +51,9 @@ namespace NewBall
 
     class Game
     {
+        Target T;
         int n = 10;  // Кол-во шариков
+
         List<Ball> baloons = new List<Ball>();
         public Game(Form f)
         {
@@ -59,7 +61,6 @@ namespace NewBall
             {
                 Baloon ball = new Baloon(f);
                 baloons.Add(ball);
-
                 #region Круглый шар
                 using (var gp = new GraphicsPath())
                 {
@@ -70,12 +71,21 @@ namespace NewBall
             }
         }
 
-        public void ChangeVector(Point dot)
+        public void ChangeBallsMotion(Point dot) // проходимся по каждому шарку
         {
-            foreach (Baloon b in baloons)
+            foreach (Baloon ball in baloons)
             {
-                b.ChangeXY(dot);
+                ball.ChangeVector(dot);
             }
+        }
+
+        public void Click(Form f, Point dot)
+        {
+            if (T != null) //существование мишени на форме
+                T.Dispose();
+            T = new Target(f, dot);
+            T.Show(); //создание мишени
+            ChangeBallsMotion(dot); // изменение вектора шарика
         }
     }
 }
